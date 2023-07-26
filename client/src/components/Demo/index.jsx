@@ -1,7 +1,5 @@
 import { useRef, useState } from "react";
 import useEth from "../../contexts/EthContext/useEth";
-import NoticeNoArtifact from "./NoticeNoArtifact";
-import NoticeWrongNetwork from "./NoticeWrongNetwork";
 import SignatureCanvas from "react-signature-canvas";
 import { create } from "ipfs-http-client";
 import { Buffer } from "buffer";
@@ -12,6 +10,7 @@ function Demo() {
   const [imageURL, setImageURL] = useState(null);
   const [storedHash, setStoredHash] = useState(null);
   const [transactionHash, setTransactionHash] = useState(null);
+  const [copyBtnText, setCopyBtnText] = useState("Copy stored hash");
   const client = create("/ip4/127.0.0.1/tcp/5001");
 
   const upload = async () => {
@@ -49,7 +48,7 @@ function Demo() {
   };
 
   const clearSignature = () => {
-    sigCanvas.current.clear();
+    if (sigCanvas?.current) sigCanvas.current.clear();
     setImageURL(null);
     setStoredHash(null);
     setTransactionHash(null);
@@ -57,63 +56,67 @@ function Demo() {
 
   const demo = (
     <>
-      <div className="demoContainer">
-        <div className="signatureTitle">
-          <span>Signature</span>
-          <button className="clearBtn" onClick={clearSignature}>
-            Clear
-          </button>
-        </div>
-
-        <div className="sigPadContainer">
-          <SignatureCanvas
-            penColor="black"
-            canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
-            ref={sigCanvas}
-          />
-        </div>
-        <button className="submitBtn" onClick={upload}>
-          Submit
-        </button>
-        {imageURL && (
-          <button className="submitBtn" onClick={download}>
-            Download
-          </button>
-        )}
-      </div>
-      <div className="signaturePreview">
-        <div>Preview</div>
-        {imageURL ? (
-          <>
+      {imageURL ? (
+        //Show preview if submit signature is clicked
+        <>
+          <div className="signaturePreview">
             <img src={imageURL} alt="signature" className="signature" />
-          </>
-        ) : (
-          <div className="noSignature">No preview yet</div>
-        )}
-        <div className="labelText">Contract Address</div>
-        <div className="valueText">
-          {imageURL ? state.accounts[0] : "unavailable"}
+            <div className="labelText">Contract Address</div>
+            <div className="valueText">{state.accounts[0]}</div>
+            <div className="labelText">Stored Hash</div>
+            <div className="valueText">{storedHash ?? "unavailable"}</div>
+            <div className="labelText">Transaction Hash</div>
+            <div className="valueText">
+              {transactionHash ?? "Pending approval"}
+            </div>
+            {/* show signature box to allow sign */}
+            <button className="submitBtn" onClick={clearSignature}>
+              Sign again
+            </button>
+            {/* copy stored hash button to clipboard */}
+            <button
+              className="submitBtn"
+              onClick={() => {
+                navigator.clipboard.writeText(storedHash);
+                setCopyBtnText("Copied");
+                setTimeout(() => {
+                  setCopyBtnText("Copy stored hash");
+                }, 500);
+              }}
+            >
+              {copyBtnText}
+            </button>
+            <button className="submitBtn" onClick={download}>
+              Download
+            </button>
+          </div>
+        </>
+      ) : (
+        //Show signature pad at the start
+        <div className="demoContainer">
+          <div className="signatureTitle">
+            <span>Signature</span>
+            <button className="clearBtn" onClick={clearSignature}>
+              Clear
+            </button>
+          </div>
+
+          <div className="sigPadContainer">
+            <SignatureCanvas
+              penColor="black"
+              canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
+              ref={sigCanvas}
+            />
+          </div>
+          <button className="submitBtn" onClick={upload}>
+            Submit
+          </button>
         </div>
-        <div className="labelText">Stored Hash</div>
-        <div className="valueText">{storedHash ?? "unavailable"}</div>
-        <div className="labelText">Transaction Hash</div>
-        <div className="valueText">{transactionHash ?? "unavailable"}</div>
-      </div>
+      )}
     </>
   );
 
-  return (
-    <div className="demo">
-      {/* {!state.artifact ? (
-        <NoticeNoArtifact />
-      ) : !state.contract ? (
-        <NoticeWrongNetwork />
-      ) : (
-        demo
-      )} */}
-      {demo}
-    </div>
-  );
+  return <div className="demo">{demo}</div>;
 }
 
 export default Demo;

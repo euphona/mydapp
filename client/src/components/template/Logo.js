@@ -11,7 +11,7 @@ const Logo = () => {
             src="/vercel.svg"
             alt="Logo"
             className={styles.logo}
-            width={100}
+            width={24}
             height={24}
             priority
           />

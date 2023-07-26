@@ -1,0 +1,8 @@
+.verify {
+  display: flex;
+  justify-content: center;
+}
+
+.verifyContainer {
+  width: 300px;
+}

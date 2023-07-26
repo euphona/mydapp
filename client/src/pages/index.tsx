@@ -1,12 +1,6 @@
 import React from "react";
-import Demo from "../components/Demo";
+import Demo from "../components/demo";
 
 export default function Page() {
-  return (
-    <div id="App">
-      <div className="container">
-        <Demo />
-      </div>
-    </div>
-  );
+  return <Demo />;
 }

@@ -1,5 +1,5 @@
 import { EthProvider } from "./contexts/EthContext";
-import Demo from "./components/Demo";
+import Demo from "./components/demo";
 
 function App() {
   return (
