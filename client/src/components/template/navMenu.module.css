@@ -1,0 +1,22 @@
+.navMenu {
+  flex: 1 1;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  background-color: transparent;
+  .menuList {
+    display: flex;
+    grid-gap: 8px;
+    gap: 8px;
+    .menuItem {
+      user-select: none;
+      color: #666;
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+    .menuItem:visited {
+      background: rgba(0, 0, 0, 0.08);
+      color: #171717;
+    }
+  }
+}

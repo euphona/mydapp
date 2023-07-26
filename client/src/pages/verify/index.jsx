@@ -1,37 +1,16 @@
 import { useRef, useState } from "react";
 import useEth from "../../contexts/EthContext/useEth";
-import NoticeNoArtifact from "./NoticeNoArtifact";
-import NoticeWrongNetwork from "./NoticeWrongNetwork";
 import SignatureCanvas from "react-signature-canvas";
 import { create } from "ipfs-http-client";
 import { Buffer } from "buffer";
 
-function Demo() {
+function Verify() {
   const { state } = useEth();
   const sigCanvas = useRef();
   const [imageURL, setImageURL] = useState(null);
   const [storedHash, setStoredHash] = useState(null);
   const [transactionHash, setTransactionHash] = useState(null);
   const client = create("/ip4/127.0.0.1/tcp/5001");
-
-  const upload = async () => {
-    const base64String = sigCanvas.current
-      .getTrimmedCanvas()
-      .toDataURL("image/png");
-    setImageURL(base64String);
-    const buffer = Buffer.from(base64String.split(",")[1], "base64");
-    await client.add(buffer).then((res) => {
-      setStoredHash(res.cid.toString());
-      state.contract.methods.set(res.cid.toString()).send(
-        {
-          from: state.accounts[0],
-        },
-        (error, transactionHash) => {
-          setTransactionHash(transactionHash);
-        }
-      );
-    });
-  };
 
   const download = async () => {
     const value = await state.contract.methods
@@ -48,34 +27,10 @@ function Demo() {
     a.click();
   };
 
-  const clearSignature = () => {
-    sigCanvas.current.clear();
-    setImageURL(null);
-    setStoredHash(null);
-    setTransactionHash(null);
-  };
-
   const demo = (
     <>
       <div className="demoContainer">
-        <div className="signatureTitle">
-          <span>Signature</span>
-          <button className="clearBtn" onClick={clearSignature}>
-            Clear
-          </button>
-        </div>
-
-        <div className="sigPadContainer">
-          <SignatureCanvas
-            penColor="black"
-            canvasProps={{ width: 500, height: 200, className: "sigCanvas" }}
-            ref={sigCanvas}
-          />
-        </div>
-        <button className="submitBtn" onClick={upload}>
-          Submit
-        </button>
-        {imageURL && (
+        {/* {imageURL && (
           <button className="submitBtn" onClick={download}>
             Download
           </button>
@@ -97,23 +52,12 @@ function Demo() {
         <div className="labelText">Stored Hash</div>
         <div className="valueText">{storedHash ?? "unavailable"}</div>
         <div className="labelText">Transaction Hash</div>
-        <div className="valueText">{transactionHash ?? "unavailable"}</div>
+        <div className="valueText">{transactionHash ?? "unavailable"}</div> */}
       </div>
     </>
   );
 
-  return (
-    <div className="demo">
-      {/* {!state.artifact ? (
-        <NoticeNoArtifact />
-      ) : !state.contract ? (
-        <NoticeWrongNetwork />
-      ) : (
-        demo
-      )} */}
-      {demo}
-    </div>
-  );
+  return <div className="demo">{demo}</div>;
 }
 
-export default Demo;
+export default Verify;
